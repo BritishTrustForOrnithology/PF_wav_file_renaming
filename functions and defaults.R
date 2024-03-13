@@ -188,7 +188,9 @@ rename_a_xml_file <- function(this_xml) {
 
 #' fix the names in a csv
 #' @details Read the csv file and try to replace the old bad filenames in the 
-#' original file name column with the corrected file names.
+#' original file name column with the corrected file names. Once this is done it
+#' updates the date and time fields with new information based on the correct
+#' file name
 #' 
 #' @param this_csv = full path to a csv of Pipeline results
 #' 
@@ -219,10 +221,36 @@ fix_a_csv <- function(this_csv) {
     #find the row of the naming info that relates to this file
     this_naming_info <- names[which(names$newname_bad == name_to_match),]
     
-    #if only one match, do the renaming
+    #if only one match, do the renaming and datetime fixes
     if(nrow(this_naming_info)==1) {
-      done <- 1
-      csv_contents$ORIGINAL.FILE.NAME[r] <- this_naming_info$newname_good
+      #if the newname is NA (no XML) skip
+      if(is.na(this_naming_info$newname_good)) {
+        done <- 0
+      }
+      #if the newname is OK
+      if(!is.na(this_naming_info$newname_good)) {
+        csv_contents$ORIGINAL.FILE.NAME[r] <- this_naming_info$newname_good
+        
+        #extract date and time from newly updated original file name
+        date <- strsplit(csv_contents$ORIGINAL.FILE.NAME[r], "_")[[1]][2]
+        time <- strsplit(csv_contents$ORIGINAL.FILE.NAME[r], "_")[[1]][3]
+        #make datetime object
+        datetime <- lubridate::fast_strptime(paste(date, time), format = "%Y%m%d %H%M%S")
+        #extract string versions of actual date
+        actual_date_str <- strftime(datetime, format = "%d/%m/%Y")
+        #extract string versions of actual time
+        time_str <- strftime(datetime, format = "%H:%M:%S")
+        #extract string versions of survey date (date of start of the night)
+        survey_date_str <- strftime(ifelse(lubridate::am(datetime), datetime-(24*60*60), datetime), format = "%d/%m/%Y")
+        
+        #update the relevant fields
+        csv_contents$ACTUAL.DATE[r] <- actual_date_str
+        csv_contents$SURVEY.DATE[r] <- survey_date_str
+        csv_contents$TIME[r] <- time_str
+        done <- 1
+      }      
+      
+      #return the status
       outcomes[r] <- done
     }
   }
