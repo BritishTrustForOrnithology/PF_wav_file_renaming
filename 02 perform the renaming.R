@@ -17,6 +17,7 @@
 #'       When complete it will save various log files in the top level of the external hard drive 
 
 library(rstudioapi)
+library(lubridate)
 
 source('functions and defaults.R')
 
