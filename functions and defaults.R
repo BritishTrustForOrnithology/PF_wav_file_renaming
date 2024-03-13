@@ -169,12 +169,18 @@ rename_a_xml_file <- function(this_xml) {
     return(outcome)
   }
   
-  #if only one match, do the renaming
+  #if only one match, potentially do the renaming
   if(nrow(this_naming_info)==1) {
     xml_old <- this_xml
-    xml_new <- gsub('wav','xml',file.path(dirname(this_xml), this_naming_info$newname_good))
-    temp <- file.rename(xml_old, xml_new)
-    outcome <- ifelse(temp==TRUE, 'renamed xml', 'failed')
+    #check that newname_good isn't NA (indicating no info on which to rename)
+    if(!is.na(this_naming_info$newname_good)) {
+      xml_new <- gsub('wav','xml',file.path(dirname(this_xml), this_naming_info$newname_good))
+      temp <- file.rename(xml_old, xml_new)
+      outcome <- ifelse(temp==TRUE, 'renamed xml', 'failed to rename')
+    }
+    if(is.na(this_naming_info$newname_good)) {
+      outcome <- 'no data to rename'
+    }
     return(outcome)
   }
 }
