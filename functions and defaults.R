@@ -126,12 +126,19 @@ rename_a_wav_file <- function(this_wav) {
     return(outcome)
   }
   
-  #if only one match, do the renaming
+  #if only one match, potentially do the renaming
   if(nrow(this_naming_info)==1) {
     wav_old <- this_wav
-    wav_new <- file.path(dirname(this_wav), this_naming_info$newname_good)
-    temp <- file.rename(wav_old, wav_new)
-    outcome <- ifelse(temp==TRUE, 'renamed', 'failed')
+    #check that newname_good isn't NA (indicating no info on which to rename)
+    if(!is.na(this_naming_info$newname_good)) {
+      wav_new <- file.path(dirname(this_wav), this_naming_info$newname_good)
+      temp <- file.rename(wav_old, wav_new)
+      outcome <- ifelse(temp==TRUE, 'renamed', 'failed to rename')
+    }
+    #no newname info to rename the file
+    if(is.na(this_naming_info$newname_good)) {
+      outcome <- 'no data to rename'
+    }
     return(outcome)
   }
 }
