@@ -63,7 +63,8 @@ for(p in 1:length(paths)) {
   } 
   #unpack and report
   rename_results_wav <- data.frame(original_name = wavs_bad_names, outcome = unlist(rename_results_wav))
-  table(rename_results_wav$outcome)
+  cat("WAV file renaming summary: n files by outcome\n")
+  print(table(rename_results_wav$outcome))
   outfile_wav <- file.path(dirname(paths[p]), paste0(format(Sys.Date(), format = "%Y%m%d"), "_rename_batlogger_wav_files_",basename(paths[p]),".csv"))  
   write.csv(rename_results_wav, outfile_wav, row.names = FALSE)
   
@@ -79,6 +80,7 @@ for(p in 1:length(paths)) {
     }
     #unpack and report
     rename_results_xml <- data.frame(original_name = xmls_bad_names, outcome = unlist(rename_results_xml))
+    cat("XML file renaming summary: n files by outcome\n")
     table(rename_results_xml$outcome)
     outfile_xml <- file.path(dirname(paths[p]), paste0(format(Sys.Date(), format = "%Y%m%d"), "_rename_batlogger_xml_files_",basename(paths[p]),".csv"))  
     write.csv(rename_results_xml, outfile_xml, row.names = FALSE)
