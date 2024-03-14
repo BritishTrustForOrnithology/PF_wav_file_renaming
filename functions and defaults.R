@@ -137,7 +137,7 @@ rename_a_wav_file <- function(this_wav) {
     }
     #no newname info to rename the file
     if(is.na(this_naming_info$newname_good)) {
-      outcome <- 'no data to rename'
+      outcome <- 'no date info for renaming'
     }
     return(outcome)
   }
@@ -179,7 +179,7 @@ rename_a_xml_file <- function(this_xml) {
       outcome <- ifelse(temp==TRUE, 'renamed xml', 'failed to rename')
     }
     if(is.na(this_naming_info$newname_good)) {
-      outcome <- 'no data to rename'
+      outcome <- 'no date info for renaming'
     }
     return(outcome)
   }
