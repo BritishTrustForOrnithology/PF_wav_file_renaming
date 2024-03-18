@@ -10,7 +10,7 @@ library(rstudioapi)
 library(lubridate)
 
 #select folder containing CSVs
-path_csv <- rstudioapi::selectDirectory()
+path_csv <- rstudioapi::selectDirectory(caption = 'Select folder containing the CSV files...')
 
 #list csvs
 csvs <- list.files(path = path_csv, pattern = "*.csv", full.names = TRUE)
@@ -31,6 +31,9 @@ for(i in 1:length(csvs)) {
   })         
   
   #iterate over rows in the results dataframe and check/replace the datetimes
+  fixdetdates <- list()
+  fixdettimes <- list()
+  fixsurvdates <- list()
   for(r in 1:nrow(csv_contents)) {
     #print(csv_contents[r,])
     #extract date and time from newly updated original file name
@@ -48,17 +51,25 @@ for(i in 1:length(csvs)) {
                                                   as.Date(datetime)), 
                                            origin = '1970-01-01'), 
                                 format = '%d/%m/%Y')
+    fixdetdates[[r]] <- ifelse(actual_date_str != csv_contents$ACTUAL.DATE[r], 1, 0)
+    fixsurvdates[[r]] <- ifelse(survey_date_str != csv_contents$SURVEY.DATE[r], 1, 0)
+    fixdettimes[[r]] <- ifelse(time_str != csv_contents$TIME[r], 1, 0)
     
-
     #cat('  Replace',csv_contents$ACTUAL.DATE[r],'with',actual_date_str,'\n')
     #cat('  Replace',csv_contents$SURVEY.DATE[r],'with',survey_date_str,'\n')
     #cat('  Replace',csv_contents$TIME[r],'with',time_str,'\n')
-    
-        
+
     #update the relevant fields
     csv_contents$ACTUAL.DATE[r] <- actual_date_str
     csv_contents$SURVEY.DATE[r] <- survey_date_str
     csv_contents$TIME[r] <- time_str
   }      
   write.csv(csv_contents, file = this_csv, row.names = FALSE)
+  fixdetdates <- mean(unlist(fixdetdates))
+  fixdettimes <- mean(unlist(fixdettimes))
+  fixsurvdates <- mean(unlist(fixsurvdates))
+  
+  cat(' Changed', 100*fixdetdates, 'percent of detection dates\n')
+  cat(' Changed', 100*fixdettimes, 'percent of detection times\n')
+  cat(' Changed', 100*fixsurvdates, 'percent of survey dates\n')
 }
