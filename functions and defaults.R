@@ -233,7 +233,7 @@ fix_a_csv <- function(this_csv) {
         
         #extract date and time from newly updated original file name
         date <- strsplit(csv_contents$ORIGINAL.FILE.NAME[r], "_")[[1]][2]
-        time <- strsplit(csv_contents$ORIGINAL.FILE.NAME[r], "_")[[1]][3]
+        time <- strsplit(csv_contents$ORIGINAL.FILE.NAME[r], "_|\\.")[[1]][3]
         #make datetime object
         datetime <- lubridate::fast_strptime(paste(date, time), format = "%Y%m%d %H%M%S")
         #extract string versions of actual date
@@ -241,7 +241,11 @@ fix_a_csv <- function(this_csv) {
         #extract string versions of actual time
         time_str <- strftime(datetime, format = "%H:%M:%S")
         #extract string versions of survey date (date of start of the night)
-        survey_date_str <- strftime(ifelse(lubridate::am(datetime), datetime-(24*60*60), datetime), format = "%d/%m/%Y")
+        survey_date_str <- strftime(as.Date(ifelse(lubridate::am(datetime), 
+                                                   as.Date(datetime)-1, 
+                                                   as.Date(datetime)), 
+                                            origin = '1970-01-01'), 
+                                    format = '%d/%m/%Y')
         
         #update the relevant fields
         csv_contents$ACTUAL.DATE[r] <- actual_date_str
