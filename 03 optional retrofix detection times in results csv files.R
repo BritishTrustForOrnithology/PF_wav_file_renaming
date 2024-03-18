@@ -1,10 +1,17 @@
 #' OPTIONAL - fix dates and times in CSVs
-#' 
-#' For cases where the audio filename in a Pipeline CSV file has been fixed but 
-#' the detection date times were not fixed.
-#' 
 #' Simon Gillings
 #' March 2024
+
+#' Purpose:
+#'    For one-off fixes of detection dates and times for cases where the program
+#'    02 perform the renaming.R was run before it included code to fix dates/times.
+#'    
+#' Usage:
+#'    1. To run the whole script in one go, press Ctrl+Shift+Enter
+#'    2. When prompted, select folder containing the Pipeline results CSVs
+#'    5. Wait...while the program iterates over all the CSVs in the folder. It 
+#'       should print progress on screen. In many cases it will change a variable
+#'       proportion of dates and usually 100% of detection times.  
 
 library(rstudioapi)
 library(lubridate)
