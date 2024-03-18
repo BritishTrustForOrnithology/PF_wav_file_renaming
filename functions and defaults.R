@@ -117,7 +117,7 @@ rename_a_wav_file <- function(this_wav) {
   name_to_match <- substr(filename,prune, nchar(filename))
   
   #find the row of the naming info that relates to this file
-  this_naming_info <- names[which(names$newname_bad == name_to_match),]
+  this_naming_info <- names[which(grepl(name_to_match, names$newname_bad)),]
   
   #if this returns none, or more than one file, throw a warning and jump to next file
   if(nrow(this_naming_info)!=1) {
