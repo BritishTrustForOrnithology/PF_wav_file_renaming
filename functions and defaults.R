@@ -112,13 +112,21 @@ process_a_file <- function(this_wav) {
 rename_a_wav_file <- function(this_wav) {
   #get the filename
   filename <- basename(this_wav)
+
+  #is the file already renamed
+  already_done <- grepl("\\d{2}~\\d{4}\\+", filename)
+  if(already_done==TRUE) {
+    outcome <- 'already renamed'
+    return(outcome)
+  }
+  
   #find where Location bit starts and prune off any part number before that
   prune <- gregexpr('Location', filename)[[1]][1]
   name_to_match <- substr(filename,prune, nchar(filename))
   
   #find the row of the naming info that relates to this file
-  this_naming_info <- names[which(grepl(name_to_match, names$newname_bad)),]
-  
+  this_naming_info <- names[which(grepl(name_to_match, names$newname_bad, fixed = TRUE)),]
+
   #if this returns none, or more than one file, throw a warning and jump to next file
   if(nrow(this_naming_info)!=1) {
     warning(paste(this_wav, 'has', nrow(this_naming_info), 'matches'))
@@ -156,11 +164,19 @@ rename_a_xml_file <- function(this_xml) {
   #create the paired wav name
   this_wav <- gsub('xml','wav',filename)
   
+  #is the file already renamed
+  already_done <- grepl("\\d{2}~\\d{4}\\+", filename)
+  if(already_done==TRUE) {
+    outcome <- 'already renamed'
+    return(outcome)
+  }
+  
+  
   name_to_match <- file.path(basename(dirname(this_xml)), this_wav)
   
   #find the row of the naming info that relates to this file
   #can't do just on file name as this restarts each night. So needs to be on folder too
-  this_naming_info <- names[which(grepl(name_to_match, names$original_audio)),]
+  this_naming_info <- names[which(grepl(name_to_match, names$original_audio, fixed = TRUE)),]
   
   #if this returns none, or more than one file, throw a warning and jump to next file
   if(nrow(this_naming_info)!=1) {
@@ -219,7 +235,7 @@ fix_a_csv <- function(this_csv) {
     name_to_match <- substr(original,prune, nchar(original))
     
     #find the row of the naming info that relates to this file
-    this_naming_info <- names[which(names$newname_bad == name_to_match),]
+    this_naming_info <- names[which(names$newname_bad == name_to_match, fixed = TRUE),]
     
     #if only one match, do the renaming and datetime fixes
     if(nrow(this_naming_info)==1) {
