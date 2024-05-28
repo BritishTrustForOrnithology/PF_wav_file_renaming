@@ -122,6 +122,11 @@ rename_a_wav_file <- function(this_wav) {
   
   #find where Location bit starts and prune off any part number before that
   prune <- gregexpr('Location', filename)[[1]][1]
+  if(prune<0) {
+    outcome <- 'Location not found in file name. Cannot rename'
+    return(outcome)
+  }
+  
   name_to_match <- substr(filename,prune, nchar(filename))
   
   #find the row of the naming info that relates to this file
