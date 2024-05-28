@@ -56,7 +56,7 @@ for(p in 1:length(paths)) {
 
   cat("  FIXING WAVS...\n")
   #for each original wav file, try to rename it
-  rename_results_wav <- list()
+  rename_results_wav <- rep(NA,length(wavs_bad_names))
   for(w in 1:length(wavs_bad_names)) {
     this_wav <- wavs_bad_names[w]
     rename_results_wav[w] <- rename_a_wav_file(this_wav)
@@ -73,7 +73,7 @@ for(p in 1:length(paths)) {
   if(rename_xmls==TRUE) {
     cat("  FIXING XMLS...\n")
     #for each original xml file, try to rename it
-    rename_results_xml <- list()
+    rename_results_xml <- rep(NA,length(xmls_bad_names))
     for(x in 1:length(xmls_bad_names)) {
       this_xml <- xmls_bad_names[x]
       rename_results_xml[x] <- rename_a_xml_file(this_xml)
