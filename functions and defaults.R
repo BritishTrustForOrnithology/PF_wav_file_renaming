@@ -120,25 +120,24 @@ rename_a_wav_file <- function(this_wav) {
     return(outcome)
   }
   
-  #find where Location bit starts and prune off any part number before that
-  # prune <- gregexpr('Location', filename)[[1]][1]
-  # if(prune<0) {
-  #   outcome <- 'Location not found in file name. Cannot rename'
-  #   return(outcome)
-  # }
-
-  # name_to_match <- substr(filename,prune, nchar(filename))
-  # 
-  # #find the row of the naming info that relates to this file
-  # this_naming_info <- names[which(grepl(name_to_match, names$newname_bad, fixed = TRUE)),]
+  #is this a "Location" type path ?
+  if(grepl('Location',filename, fixed = TRUE)) {
+    #find where Location bit starts and prune off any part number before that
+    prune <- gregexpr('Location', filename)[[1]][1]
+    name_to_match <- substr(filename,prune, nchar(filename))
+    #find the row of the naming info that relates to this file
+    this_naming_info <- names[which(grepl(name_to_match, names$newname_bad, fixed = TRUE)),]
+  }
   
-  filename_bits <- strsplit(filename, "_")[[1]]
-  bits_to_match <- filename_bits[(length(filename_bits)-1):length(filename_bits)]
-  name_to_match <- paste(bits_to_match, collapse = '_')   
-
+  #else try matching on partial filepath strings  
+  if(!grepl('Location',filename, fixed = TRUE)) {
+    filename_bits <- strsplit(filename, "_")[[1]]
+    bits_to_match <- filename_bits[(length(filename_bits)-1):length(filename_bits)]
+    name_to_match <- paste(bits_to_match, collapse = '_')   
+    #find the row of the naming info that relates to this file
+    this_naming_info <- names[which(grepl(name_to_match, names$newname_bad, fixed = TRUE)),]
+  }
   
-  #find the row of the naming info that relates to this file
-  this_naming_info <- names[which(grepl(name_to_match, names$newname_bad, fixed = TRUE)),]
 
   #if this returns none, throw a warning and jump to next file
   if(nrow(this_naming_info)==0) {
