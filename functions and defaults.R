@@ -121,21 +121,36 @@ rename_a_wav_file <- function(this_wav) {
   }
   
   #find where Location bit starts and prune off any part number before that
-  prune <- gregexpr('Location', filename)[[1]][1]
-  if(prune<0) {
-    outcome <- 'Location not found in file name. Cannot rename'
-    return(outcome)
-  }
+  # prune <- gregexpr('Location', filename)[[1]][1]
+  # if(prune<0) {
+  #   outcome <- 'Location not found in file name. Cannot rename'
+  #   return(outcome)
+  # }
+
+  # name_to_match <- substr(filename,prune, nchar(filename))
+  # 
+  # #find the row of the naming info that relates to this file
+  # this_naming_info <- names[which(grepl(name_to_match, names$newname_bad, fixed = TRUE)),]
   
-  name_to_match <- substr(filename,prune, nchar(filename))
+  filename_bits <- strsplit(filename, "_")[[1]]
+  bits_to_match <- filename_bits[(length(filename_bits)-1):length(filename_bits)]
+  name_to_match <- paste(bits_to_match, collapse = '_')   
+
   
   #find the row of the naming info that relates to this file
   this_naming_info <- names[which(grepl(name_to_match, names$newname_bad, fixed = TRUE)),]
 
-  #if this returns none, or more than one file, throw a warning and jump to next file
-  if(nrow(this_naming_info)!=1) {
+  #if this returns none, throw a warning and jump to next file
+  if(nrow(this_naming_info)==0) {
     warning(paste(this_wav, 'has', nrow(this_naming_info), 'matches'))
-    outcome <- 'cannot match filename'
+    outcome <- 'cannot match filename - no matches'
+    return(outcome)
+  }
+  
+  #if this returns too many matches, throw a warning and jump to next file
+  if(nrow(this_naming_info)>1) {
+    warning(paste(this_wav, 'has', nrow(this_naming_info), 'matches'))
+    outcome <- 'cannot match filename - too many weak matches'
     return(outcome)
   }
   
